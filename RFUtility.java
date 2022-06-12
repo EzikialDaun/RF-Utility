@@ -61,32 +61,28 @@ class PIAttenuator {
 }
 
 class RFCalculator {
-	private double impedance = 50;
+	private static double impedance = 50;
 
-	public double getImpedance() {
+	public static double getImpedance() {
 		return impedance;
 	}
 
-	public void setImpedance(double impedance) {
-		this.impedance = impedance;
-	}
-
-	public PIAttenuator getPIAttenuator(double attenuation) {
+	public static PIAttenuator getPIAttenuator(double attenuation) {
 		PIAttenuator piAttenuator = new PIAttenuator();
-		double middleRes = (this.impedance / 2) * (Math.pow(10, (attenuation / 10)) - 1)
+		double middleRes = (impedance / 2) * (Math.pow(10, (attenuation / 10)) - 1)
 				* Math.pow(10, ((-1 * attenuation) / 20));
 		double wingRes = 1
-				/ (((Math.pow(10, attenuation / 10) + 1) / (this.impedance * (Math.pow(10, attenuation / 10) - 1)))
+				/ (((Math.pow(10, attenuation / 10) + 1) / (impedance * (Math.pow(10, attenuation / 10) - 1)))
 						- (1 / middleRes));
 		piAttenuator.setInfo(wingRes, middleRes);
 		return piAttenuator;
 	}
 
-	public BridgeAttenuator getBridgeAttenuator(double attenuation) {
+	public static BridgeAttenuator getBridgeAttenuator(double attenuation) {
 		BridgeAttenuator bridgeAttenuator = new BridgeAttenuator();
-		double middleRes = this.impedance * (Math.pow(10, attenuation / 20) - 1);
-		double sourceRes = this.impedance / (Math.pow(10, attenuation / 20) - 1);
-		bridgeAttenuator.setInfo(sourceRes, middleRes, this.impedance);
+		double middleRes = impedance * (Math.pow(10, attenuation / 20) - 1);
+		double sourceRes = impedance / (Math.pow(10, attenuation / 20) - 1);
+		bridgeAttenuator.setInfo(sourceRes, middleRes, impedance);
 		return bridgeAttenuator;
 	}
 }
@@ -96,7 +92,6 @@ public class RFUtility {
 		Scanner scanner = new Scanner(System.in);
 		double attenuation = 0, watt = 0, decibelMilliwatte = 0;
 		String op;
-		RFCalculator cal = new RFCalculator();
 		do {
 			printMenu();
 			op = scanner.next();
@@ -106,7 +101,7 @@ public class RFUtility {
 				System.out.println("[PI 형태 감쇠기 계산]");
 				System.out.print("감쇠량(dB)을 입력해주세요. --> ");
 				attenuation = scanner.nextDouble();
-				PIAttenuator pi = cal.getPIAttenuator(attenuation);
+				PIAttenuator pi = RFCalculator.getPIAttenuator(attenuation);
 				printBoard();
 				pi.print();
 				break;
@@ -114,7 +109,7 @@ public class RFUtility {
 				System.out.println("[브릿지 형태 감쇠기 계산]");
 				System.out.print("감쇠량(dB)을 입력해주세요. --> ");
 				attenuation = scanner.nextDouble();
-				BridgeAttenuator bridge = cal.getBridgeAttenuator(attenuation);
+				BridgeAttenuator bridge = RFCalculator.getBridgeAttenuator(attenuation);
 				printBoard();
 				bridge.print();
 				break;
